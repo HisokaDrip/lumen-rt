@@ -1,0 +1,18 @@
+{
+  "camera": {"eye": [0, 0.8, -7], "target": [0, 0.8, 0], "fov": 40},
+  "sky_top": [0.25, 0.15, 0.45],
+  "sky_bottom": [1.0, 0.55, 0.3],
+  "ambient": 0.1,
+  "objects": [
+    {"type": "plane", "point": [0, 0, 0], "normal": [0, 1, 0],
+     "material": {"color": [0.1, 0.12, 0.2], "specular": 0.6, "shininess": 300, "reflect": 0.6}},
+    {"type": "sphere", "center": [-1.6, 0.8, 1], "radius": 0.8,
+     "material": {"color": [1.0, 0.45, 0.2], "reflect": 0.2}},
+    {"type": "sphere", "center": [0.4, 0.5, -0.5], "radius": 0.5,
+     "material": {"color": [0.95, 0.95, 0.95], "diffuse": 0.1, "specular": 1.0, "shininess": 300, "reflect": 0.9}},
+    {"type": "sphere", "center": [1.9, 1.1, 2], "radius": 1.1,
+     "material": {"color": [0.55, 0.25, 0.8], "reflect": 0.1}}
+  ],
+  "lights": [{"position": [0, 3, 10], "color": [1.0, 0.7, 0.45], "intensity": 1.1},
+             {"position": [-3, 5, -6], "intensity": 0.35}]
+}

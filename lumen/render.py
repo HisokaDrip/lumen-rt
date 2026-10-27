@@ -17,7 +17,8 @@ def nearest_hit(scene: Scene, origins, dirs):
 
 
 def sky(scene, dirs):
-    k = np.clip(0.5 * (dirs[:, 1] + 1.0), 0, 1)[:, None]
+    # horizon colour at y=0, fading to the top colour as you look up
+    k = (np.clip(dirs[:, 1], 0, 1) ** 0.6)[:, None]
     return (1 - k) * np.asarray(scene.sky_bottom) + k * np.asarray(scene.sky_top)
 
 
