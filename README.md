@@ -37,6 +37,32 @@ $ python -m lumen scenes/mirror_balls.json -o renders/small.png
 
 Options: `-W/-H` size, `-s` samples per pixel, `-d` max bounces, `--preview` for the terminal version.
 
+## how it works
+
+1. **camera rays.** `primary_rays` builds a camera basis (forward, right, up) from
+   `eye`/`target`/`fov` and makes one unit direction per pixel with a `meshgrid`, so the whole
+   image is a single `(W*H, 3)` array of rays.
+2. **intersection.** each object computes its hit distance `t` for every ray at once.
+   spheres solve the ray/sphere quadratic (simplified because directions are unit length,
+   taking the far root when the ray starts inside), planes do `dot(p0 - o, n) / dot(d, n)`.
+   misses get a huge `FAR` value. stacking those arrays and taking `argmin` gives the nearest
+   object per ray.
+3. **shading.** rays that miss get a sky gradient. for each object, the rays that hit it are
+   pulled out with a mask and shaded together: ambient + Lambert diffuse + Blinn-Phong specular
+   per light. normals facing away from the ray are flipped, and the hit point is nudged off the
+   surface a bit to avoid shadow acne.
+4. **shadows.** for every light, a shadow ray goes from the hit point toward the light, run
+   through the same `nearest_hit`. if anything is closer than the light, that light is skipped
+   for that pixel. hard shadows only, since lights are points.
+5. **reflections.** for reflective materials, the reflected directions are traced by calling
+   `shade` again on just those rays with `depth - 1`, and the result is blended in by the
+   material's `reflect` amount.
+6. **anti-aliasing and output.** with `-s N` the whole image is rendered N times with a
+   random sub-pixel offset and averaged. the offset is the same for every pixel in a pass,
+   which keeps it vectorised but isn't true per-pixel jitter. the linear result goes through a
+   soft tone map and gamma 2.2, then into the hand-written PNG encoder (raw scanlines,
+   `zlib`, CRC'd chunks).
+
 ## scene files
 
 ```json
